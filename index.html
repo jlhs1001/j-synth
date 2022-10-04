@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>palps</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap" rel="stylesheet">
+    <style>
+        body, html {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+            background-color: #003049;
+            color: #112A46;
+            font-family: 'Roboto', sans-serif;
+            overflow: hidden;
+        }
+
+        input[type=range][orient=vertical]
+        {
+            writing-mode: bt-lr; /* IE */
+            -webkit-appearance: slider-vertical; /* Chromium */
+            width: 8px;
+            height: 175px;
+            padding: 0 5px;
+            accent-color: #fcbf49;
+        }
+
+        .vertical-center {
+            margin: 0;
+            position: absolute;
+            top: 50%;
+            -ms-transform: translateY(-50%);
+            transform: translateY(-50%);
+        }
+
+        #pianoDisplay {
+            height: 210px;
+            border-radius: 0 8px 8px 0;
+            display: inline-block;
+        }
+
+        .pianoControlPanel {
+            display: inline-block;
+            background-color: #EAE2B7;
+            border-radius: 8px 0 0 8px;
+            height: 200px;
+            padding: 5px 8px 5px 8px;
+            float: left;
+        }
+
+        .inlineUIBlock {
+            color: #112A46;
+            float: left;
+            background-color: #fcbf49;
+            display: inline-block;
+            padding: 3px 5px 3px 5px;
+            user-select: none;
+        }
+
+        .inlineUIButton:hover {
+            background-color: #ffce84;
+        }
+
+        #amplitudeTimeGraph {
+            margin-left: 30px;
+        }
+        .numberInputBox {
+            font-family: 'Roboto', sans-serif;
+            display: inline-block;
+            width: 30px;
+            border: none;
+            border-bottom: solid 2px #BEA052;
+            outline: none;
+            background-color: #fcbf49;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div style="display: none">
+
+</div>
+<div style="padding: 3px; border-radius: 8px; background-color: #eae2b7; margin: 8px;">
+    <!--    <div style="user-select: none; cursor: pointer; margin-top: 2px; margin-right: 2px; border-radius: 3px; color: white; padding: 5px 8px 5px 8px; width: fit-content; height: 20px; background-color: #d62828; float: right;">RESET</div>-->
+    <!--    <div style="display: grid; grid-template-columns: repeat(3, 1fr);">-->
+    <!--        <div style="display: inline-block; margin-right: 30px; border-radius: 2px; position: relative; height: fit-content;">-->
+    <!--            <input oninput="changeInputDisplayValue('Gain', this, '%')" style="display: inline;" name="gain" id="gain" min="0" max="100" type="range" orient="vertical" list="steplist"/>-->
+    <!--            <label for="gain"></label>-->
+    <!--            <h3 class="vertical-center" style="display: inline; padding-left: 8px; width: fit-content;">Gain</h3>-->
+    <!--        </div>-->
+    <!--        <div style="display: inline-block; margin-right: 30px; border-radius: 2px; position: relative; height: fit-content;">-->
+    <!--            <input oninput="changeInputDisplayValueAttack('Attack', this, 's')" style="display: inline;" name="gain" id="attack" step="0.05" min="0" max="10" type="range" orient="vertical" list="steplist10"/>-->
+    <!--            <label for="attack"></label>-->
+    <!--            <h3 class="vertical-center" style="display: inline; padding-left: 8px; width: fit-content;">Attack</h3>-->
+    <!--        </div>-->
+    <!--        <div style="display: inline-block; margin-right: 30px; border-radius: 2px; position: relative; height: fit-content;">-->
+    <!--            <input oninput="changeInputDisplayValueAttack('Frequency', this, 'Hz')" style="display: inline;" name="gain" id="frequency" min="0" max="20000" type="range" orient="vertical"/>-->
+    <!--            <label for="frequency"></label>-->
+    <!--            <h3 class="vertical-center" style="display: inline; padding-left: 8px; width: fit-content;">Frequency</h3>-->
+    <!--        </div>-->
+    <!--    </div>-->
+    <canvas id="amplitudeTimeGraph" width="300px" height="200px"></canvas>
+    <div style="display: inline-block">
+        <select id="waveformSelect">
+            <option value="sine">Sine</option>
+            <option value="square">Square</option>
+            <option value="sawtooth">Sawtooth</option>
+            <option value="triangle">Triangle</option>
+        </select>
+        <div>
+            <div id="secSub" style="height: 20px; cursor: pointer; border-radius: 3px 0 0 3px; border: solid 1px #bea052;" class="inlineUIBlock inlineUIButton">-</div>
+            <div style="border-top: solid 1px #BEA052FF; border-bottom: solid 1px #BEA052FF;" class="inlineUIBlock">
+                seconds
+                <input onchange="clampInputVal(this, 0, 10)" id="graphSecondsInput" class="numberInputBox" value="2">
+            </div>
+            <div id="secAdd" style="height: 20px; cursor: pointer; border-radius: 0 3px 3px 0; border: solid 1px #BEA052FF;" class="inlineUIBlock inlineUIButton">+</div>
+        </div>
+        <br/><br>
+<!--        distortion-->
+<!--        <input type="number" id="distortion" value="10">-->
+    </div>
+</div>
+<div style="width: fit-content; margin-left: 8px; margin-top: 16px; margin-right: 8px;">
+    <div class="pianoControlPanel">
+        <div>
+            <div id="octaveSub" style="cursor: pointer; border-radius: 3px 0 0 3px; border: solid 1px #bea052;" class="inlineUIBlock inlineUIButton">-</div>
+            <div style="border-top: solid 1px #BEA052FF; border-bottom: solid 1px #BEA052FF;" class="inlineUIBlock">octave</div>
+            <div id="octaveAdd" style="cursor: pointer; border-radius: 0 3px 3px 0; border: solid 1px #BEA052FF;" class="inlineUIBlock inlineUIButton">+</div>
+        </div>
+    </div>
+    <canvas id="pianoDisplay" height="300" width="1000px"></canvas>
+</div>
+<br>
+<canvas id="canvas" width="600" height="600"></canvas>
+
+<datalist id="steplist">
+    <option>0</option>
+    <option>25</option>
+    <option>50</option>
+    <option>75</option>
+    <option>100</option>
+</datalist>
+
+<datalist id="steplist10">
+    <option>0</option>
+    <option>2.5</option>
+    <option>5</option>
+    <option>7.5</option>
+    <option>10</option>
+</datalist>
+<div id="testDiv"></div>
+<script src="synner.js"></script>
+</body>
+</html>
